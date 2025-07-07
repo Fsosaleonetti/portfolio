@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 - Página No Encontrada</title>
+    <link rel="stylesheet" href="pagina-404-styles.css">
+</head>
+<body>
+    <!-- Navegación -->
+    <nav class="barra-navegacion">
+        <div class="contenedor-navegacion">
+            <div class="logo-navegacion">
+                <a href="index.html" style="text-decoration: none; color: inherit;">Fabricio Agustin Sosa Leonetti</a>
+            </div>
+            <ul class="menu-navegacion" id="menuNavegacion">
+                <li><a href="index.html#inicio">Inicio</a></li>
+                <li><a href="index.html#sobre-mi">Sobre Mí</a></li>
+                <li><a href="index.html#proyectos">Proyectos</a></li>
+                <li><a href="index.html#habilidades">Habilidades</a></li>
+                <li><a href="index.html#experiencia">Experiencia</a></li>
+                <li><a href="index.html#contacto">Contacto</a></li>
+            </ul>
+            <div class="menu-movil" id="menuMovil">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <div class="formas-flotantes">
+        <div class="forma"></div>
+        <div class="forma"></div>
+        <div class="forma"></div>
+    </div>
+
+    <div class="contenedor">
+        <div class="robot">🤖</div>
+        <div class="codigo-error">404</div>
+        <h1 class="titulo-error">¡Oops! Página no encontrada</h1>
+        <p class="mensaje-error">
+            Parece que la página que buscas se ha perdido en el ciberespacio. 
+            No te preocupes, nuestro robot está trabajando para encontrarla.
+        </p>
+        <div class="botones">
+            <a href="/" class="boton boton-primario" id="botonInicio">Volver al Inicio</a>
+            <button class="boton boton-secundario" id="botonSorpresa">Sorpréndeme</button>
+        </div>
+    </div>
+
+    <script>
+        // Efecto de partículas al hacer clic
+        document.addEventListener('click', function(e) {
+            crearParticulas(e.clientX, e.clientY);
+        });
+
+        function crearParticulas(x, y) {
+            for (let i = 0; i < 6; i++) {
+                const particula = document.createElement('div');
+                particula.style.position = 'fixed';
+                particula.style.left = x + 'px';
+                particula.style.top = y + 'px';
+                particula.style.width = '6px';
+                particula.style.height = '6px';
+                particula.style.backgroundColor = '#475569';
+                particula.style.borderRadius = '50%';
+                particula.style.pointerEvents = 'none';
+                particula.style.zIndex = '1000';
+                
+                document.body.appendChild(particula);
+                
+                const angulo = (Math.PI * 2 * i) / 6;
+                const velocidad = 100;
+                const vx = Math.cos(angulo) * velocidad;
+                const vy = Math.sin(angulo) * velocidad;
+                
+                let opacidad = 1;
+                let posX = x;
+                let posY = y;
+                
+                const animar = () => {
+                    posX += vx * 0.02;
+                    posY += vy * 0.02;
+                    opacidad -= 0.02;
+                    
+                    particula.style.left = posX + 'px';
+                    particula.style.top = posY + 'px';
+                    particula.style.opacity = opacidad;
+                    
+                    if (opacidad > 0) {
+                        requestAnimationFrame(animar);
+                    } else {
+                        document.body.removeChild(particula);
+                    }
+                };
+                
+                requestAnimationFrame(animar);
+            }
+        }
+
+        // Botón sorpresa
+        document.getElementById('botonSorpresa').addEventListener('click', function() {
+            const mensajes = [
+                "¡El robot encontró un café! ☕",
+                "¡Página en construcción! 🚧",
+                "¡Error 418: Soy una tetera! 🫖",
+                "¡El servidor está durmiendo! 😴",
+                "¡Página secreta desbloqueada! 🔓"
+            ];
+            
+            const mensajeAleatorio = mensajes[Math.floor(Math.random() * mensajes.length)];
+            
+            // Cambiar temporalmente el mensaje
+            const elementoMensaje = document.querySelector('.mensaje-error');
+            const mensajeOriginal = elementoMensaje.textContent;
+            elementoMensaje.textContent = mensajeAleatorio;
+            elementoMensaje.style.color = '#475569';
+            elementoMensaje.style.fontWeight = 'bold';
+            
+            setTimeout(() => {
+                elementoMensaje.textContent = mensajeOriginal;
+                elementoMensaje.style.color = '#64748b';
+                elementoMensaje.style.fontWeight = 'normal';
+            }, 3000);
+        });
+
+        // Cambiar emoji del robot aleatoriamente
+        setInterval(() => {
+            const robots = ['🤖', '🚀', '👾', '🛸', '⚡', '🔧'];
+            const elementoRobot = document.querySelector('.robot');
+            const robotActual = elementoRobot.textContent;
+            let nuevoRobot;
+            
+            do {
+                nuevoRobot = robots[Math.floor(Math.random() * robots.length)];
+            } while (nuevoRobot === robotActual);
+            
+            elementoRobot.textContent = nuevoRobot;
+        }, 5000);
+
+        // Menú móvil
+        const menuMovil = document.getElementById('menuMovil');
+        const menuNavegacion = document.getElementById('menuNavegacion');
+
+        if (menuMovil && menuNavegacion) {
+            menuMovil.addEventListener('click', () => {
+                menuMovil.classList.toggle('activo');
+                menuNavegacion.classList.toggle('activo');
+            });
+
+            // Cerrar menú móvil al hacer clic en un enlace
+            document.querySelectorAll('.menu-navegacion a').forEach(enlace => {
+                enlace.addEventListener('click', () => {
+                    menuMovil.classList.remove('activo');
+                    menuNavegacion.classList.remove('activo');
+                });
+            });
+        }
+    </script>
+</body>
+</html>

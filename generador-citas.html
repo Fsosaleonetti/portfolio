@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador de Citas Aleatorias</title>
+    <link rel="icon" href="Icono/wind.png" type="image/x-icon">
+    <link rel="stylesheet" href="generador-citas-styles.css">
+</head>
+<body>
+    <div class="contenedor">
+        <div class="encabezado">
+            <h1>✨ Generador de Citas Aleatorias</h1>
+            <p>Encuentra inspiración con citas motivacionales</p>
+        </div>
+
+        <div class="contenedor-cita" id="contenedorCita">
+            <div class="texto-cita" id="textoCita">
+                Haz clic en "Nueva Cita" para comenzar tu inspiración diaria
+            </div>
+            <div class="autor-cita" id="autorCita" style="display: none;">
+                Autor
+            </div>
+        </div>
+
+        <div class="controles">
+            <button class="boton boton-primario" id="botonNuevaCita">
+                🎲 Nueva Cita
+            </button>
+            <button class="boton boton-secundario" id="botonCompartir">
+                📤 Compartir
+            </button>
+            <button class="boton boton-secundario" id="botonAlternarAgregar">
+                ➕ Agregar Cita
+            </button>
+        </div>
+
+        <div class="seccion-agregar-cita" id="seccionAgregarCita" style="display: none;">
+            <h3>Agregar Nueva Cita</h3>
+            <form id="formularioAgregarCita">
+                <div class="grupo-formulario">
+                    <label for="nuevoTextoCita">Cita:</label>
+                    <textarea id="nuevoTextoCita" placeholder="Escribe aquí la cita motivacional..." required></textarea>
+                </div>
+                <div class="grupo-formulario">
+                    <label for="nuevoAutorCita">Autor:</label>
+                    <input type="text" id="nuevoAutorCita" placeholder="Nombre del autor" required>
+                </div>
+                <button type="submit" class="boton boton-primario">
+                    💾 Guardar Cita
+                </button>
+            </form>
+        </div>
+
+        <div class="lista-citas">
+            <h3>📚 Todas las Citas (<span id="contadorCitas">0</span>)</h3>
+            <div id="listaCitas"></div>
+        </div>
+    </div>
+
+    <script>
+        class GeneradorCitas {
+            constructor() {
+                this.citas = [
+                    {
+                        texto: "El éxito no es la clave de la felicidad. La felicidad es la clave del éxito.",
+                        autor: "Albert Schweitzer"
+                    },
+                    {
+                        texto: "La única forma de hacer un gran trabajo es amar lo que haces.",
+                        autor: "Steve Jobs"
+                    },
+                    {
+                        texto: "No esperes por el momento perfecto, toma el momento y hazlo perfecto.",
+                        autor: "Zoey Sayward"
+                    },
+                    {
+                        texto: "El futuro pertenece a quienes creen en la belleza de sus sueños.",
+                        autor: "Eleanor Roosevelt"
+                    },
+                    {
+                        texto: "No puedes cambiar el viento, pero puedes ajustar las velas.",
+                        autor: "Proverbio"
+                    },
+                    {
+                        texto: "La creatividad es la inteligencia divirtiéndose.",
+                        autor: "Albert Einstein"
+                    },
+                    {
+                        texto: "El código es poesía escrita en lógica.",
+                        autor: "Desarrollador Anónimo"
+                    },
+                    {
+                        texto: "Cada experto fue una vez un principiante.",
+                        autor: "Helen Hayes"
+                    }
+                ];
+                
+                this.indiceCitaActual = -1;
+                this.cargarCitasDelAlmacenamiento();
+                this.inicializarEventos();
+                this.actualizarListaCitas();
+                this.actualizarContadorCitas();
+            }
+
+            cargarCitasDelAlmacenamiento() {
+                const citasGuardadas = localStorage.getItem('citasPersonalizadas');
+                if (citasGuardadas) {
+                    const citasPersonalizadas = JSON.parse(citasGuardadas);
+                    this.citas = [...this.citas, ...citasPersonalizadas];
+                }
+            }
+
+            guardarCitasEnAlmacenamiento() {
+                const citasPersonalizadas = this.citas.slice(8); // Solo guardar las citas personalizadas
+                localStorage.setItem('citasPersonalizadas', JSON.stringify(citasPersonalizadas));
+            }
+
+            inicializarEventos() {
+                document.getElementById('botonNuevaCita').addEventListener('click', () => {
+                    this.mostrarCitaAleatoria();
+                });
+
+                document.getElementById('botonCompartir').addEventListener('click', () => {
+                    this.compartirCita();
+                });
+
+                document.getElementById('botonAlternarAgregar').addEventListener('click', () => {
+                    this.alternarSeccionAgregar();
+                });
+
+                document.getElementById('formularioAgregarCita').addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    this.agregarNuevaCita();
+                });
+
+                // Mostrar una cita aleatoria al cargar
+                setTimeout(() => this.mostrarCitaAleatoria(), 1000);
+            }
+
+            mostrarCitaAleatoria() {
+                if (this.citas.length === 0) return;
+
+                const contenedor = document.getElementById('contenedorCita');
+                contenedor.classList.add('cargando');
+
+                setTimeout(() => {
+                    let nuevoIndice;
+                    do {
+                        nuevoIndice = Math.floor(Math.random() * this.citas.length);
+                    } while (nuevoIndice === this.indiceCitaActual && this.citas.length > 1);
+
+                    this.indiceCitaActual = nuevoIndice;
+                    const cita = this.citas[this.indiceCitaActual];
+
+                    document.getElementById('textoCita').textContent = cita.texto;
+                    document.getElementById('autorCita').textContent = cita.autor;
+                    document.getElementById('autorCita').style.display = 'block';
+
+                    contenedor.classList.remove('cargando');
+                    contenedor.classList.add('aparecer-gradual');
+
+                    setTimeout(() => {
+                        contenedor.classList.remove('aparecer-gradual');
+                    }, 500);
+                }, 300);
+            }
+
+            compartirCita() {
+                if (this.indiceCitaActual === -1) {
+                    alert('Primero selecciona una cita para compartir');
+                    return;
+                }
+
+                const cita = this.citas[this.indiceCitaActual];
+                const textoCompartir = `"${cita.texto}" - ${cita.autor}`;
+
+                if (navigator.share) {
+                    navigator.share({
+                        title: 'Cita Inspiracional',
+                        text: textoCompartir
+                    });
+                } else {
+                    navigator.clipboard.writeText(textoCompartir).then(() => {
+                        alert('¡Cita copiada al portapapeles!');
+                    });
+                }
+            }
+
+            alternarSeccionAgregar() {
+                const seccion = document.getElementById('seccionAgregarCita');
+                const esVisible = seccion.style.display !== 'none';
+                seccion.style.display = esVisible ? 'none' : 'block';
+                
+                const boton = document.getElementById('botonAlternarAgregar');
+                boton.textContent = esVisible ? '➕ Agregar Cita' : '❌ Cerrar';
+            }
+
+            agregarNuevaCita() {
+                const texto = document.getElementById('nuevoTextoCita').value.trim();
+                const autor = document.getElementById('nuevoAutorCita').value.trim();
+
+                if (!texto || !autor) {
+                    alert('Por favor, completa todos los campos');
+                    return;
+                }
+
+                const nuevaCita = { texto, autor };
+                this.citas.push(nuevaCita);
+                this.guardarCitasEnAlmacenamiento();
+                this.actualizarListaCitas();
+                this.actualizarContadorCitas();
+
+                // Limpiar formulario
+                document.getElementById('formularioAgregarCita').reset();
+                
+                // Cerrar sección
+                this.alternarSeccionAgregar();
+
+                alert('¡Cita agregada exitosamente!');
+            }
+
+            eliminarCita(indice) {
+                if (indice < 8) {
+                    alert('No puedes eliminar las citas predeterminadas');
+                    return;
+                }
+
+                if (confirm('¿Estás seguro de que quieres eliminar esta cita?')) {
+                    this.citas.splice(indice, 1);
+                    this.guardarCitasEnAlmacenamiento();
+                    this.actualizarListaCitas();
+                    this.actualizarContadorCitas();
+                }
+            }
+
+            actualizarListaCitas() {
+                const contenedorLista = document.getElementById('listaCitas');
+                contenedorLista.innerHTML = '';
+
+                this.citas.forEach((cita, indice) => {
+                    const elementoCita = document.createElement('div');
+                    elementoCita.className = 'elemento-cita';
+                    
+                    elementoCita.innerHTML = `
+                        <div class="texto-elemento-cita">"${cita.texto}"</div>
+                        <div class="autor-elemento-cita">— ${cita.autor}</div>
+                        ${indice >= 8 ? `<button class="boton-eliminar" onclick="generadorCitas.eliminarCita(${indice})">×</button>` : ''}
+                    `;
+                    
+                    contenedorLista.appendChild(elementoCita);
+                });
+            }
+
+            actualizarContadorCitas() {
+                document.getElementById('contadorCitas').textContent = this.citas.length;
+            }
+        }
+
+        // Inicializar la aplicación
+        const generadorCitas = new GeneradorCitas();
+
+        // Atajos de teclado
+        document.addEventListener('keydown', (e) => {
+            if (e.key === ' ' && e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
+                e.preventDefault();
+                generadorCitas.mostrarCitaAleatoria();
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora Básica - Portafolio</title>
+    <link rel="icon" href="Icono/wind.png" type="image/x-icon">
+    <link rel="stylesheet" href="calculadora-styles.css">
+
+</head>
+<body>
+    <!-- Navegación -->
+    <nav class="barra-navegacion">
+        <div class="contenedor-navegacion">
+            <div class="logo-navegacion">
+                <a href="index.html" style="text-decoration: none; color: inherit;">Fabricio Agustin Sosa Leonetti</a>
+            </div>
+            <ul class="menu-navegacion" id="menuNavegacion">
+                <li><a href="index.html#inicio">Inicio</a></li>
+                <li><a href="index.html#sobre-mi">Sobre Mí</a></li>
+                <li><a href="index.html#proyectos">Proyectos</a></li>
+                <li><a href="index.html#habilidades">Habilidades</a></li>
+                <li><a href="index.html#experiencia">Experiencia</a></li>
+                <li><a href="index.html#contacto">Contacto</a></li>
+            </ul>
+            <div class="menu-movil" id="menuMovil">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <div class="contenedor">
+        <div class="seccion-calculadora">
+            <div class="encabezado">
+                <h1>🧮 Calculadora Básica</h1>
+                <p>Realiza cálculos matemáticos con facilidad</p>
+            </div>
+
+            <div class="calculadora">
+                <div class="pantalla">
+                    <div class="pantalla-anterior" id="operandoAnterior"></div>
+                    <div class="pantalla-actual" id="operandoActual">0</div>
+                </div>
+
+                <div class="botones">
+                    <button class="boton boton-limpiar" onclick="calculadora.limpiar()">AC</button>
+                    <button class="boton boton-limpiar" onclick="calculadora.borrar()">⌫</button>
+                    <button class="boton boton-operador" onclick="calculadora.elegirOperacion('/')" data-operacion="/">÷</button>
+                    <button class="boton boton-operador" onclick="calculadora.elegirOperacion('*')" data-operacion="*">×</button>
+
+                    <button class="boton boton-numero" onclick="calculadora.agregarNumero('7')">7</button>
+                    <button class="boton boton-numero" onclick="calculadora.agregarNumero('8')">8</button>
+                    <button class="boton boton-numero" onclick="calculadora.agregarNumero('9')">9</button>
+                    <button class="boton boton-operador" onclick="calculadora.elegirOperacion('-')" data-operacion="-">−</button>
+
+                    <button class="boton boton-numero" onclick="calculadora.agregarNumero('4')">4</button>
+                    <button class="boton boton-numero" onclick="calculadora.agregarNumero('5')">5</button>
+                    <button class="boton boton-numero" onclick="calculadora.agregarNumero('6')">6</button>
+                    <button class="boton boton-operador" onclick="calculadora.elegirOperacion('+')" data-operacion="+">+</button>
+
+                    <button class="boton boton-numero" onclick="calculadora.agregarNumero('1')">1</button>
+                    <button class="boton boton-numero" onclick="calculadora.agregarNumero('2')">2</button>
+                    <button class="boton boton-numero" onclick="calculadora.agregarNumero('3')">3</button>
+                    <button class="boton boton-igual" onclick="calculadora.calcular()" rowspan="2">=</button>
+
+                    <button class="boton boton-numero boton-expandir-2" onclick="calculadora.agregarNumero('0')">0</button>
+                    <button class="boton boton-numero" onclick="calculadora.agregarNumero('.')">.</button>
+                </div>
+
+                <div class="sugerencia-teclado">
+                    <h4>💡 Atajos de Teclado</h4>
+                    <p>Usa el teclado numérico, Enter para calcular, Escape para limpiar, Backspace para borrar</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="seccion-historial">
+            <div class="encabezado-historial">
+                <h3 class="titulo-historial">📋 Historial</h3>
+                <button class="limpiar-historial" onclick="calculadora.limpiarHistorial()">Limpiar</button>
+            </div>
+            <div class="lista-historial" id="listaHistorial">
+                <div class="sin-historial">No hay cálculos realizados</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class Calculadora {
+            constructor() {
+                this.operandoActual = '0';
+                this.operandoAnterior = '';
+                this.operacion = undefined;
+                this.debeReiniciarPantalla = false;
+                this.historial = JSON.parse(localStorage.getItem('historialCalculadora')) || [];
+                
+                this.elementoOperandoActual = document.getElementById('operandoActual');
+                this.elementoOperandoAnterior = document.getElementById('operandoAnterior');
+                this.elementoListaHistorial = document.getElementById('listaHistorial');
+                
+                this.inicializarSoporteTeclado();
+                this.actualizarPantalla();
+                this.actualizarHistorial();
+            }
+
+            inicializarSoporteTeclado() {
+                document.addEventListener('keydown', (e) => {
+                    // Números
+                    if (e.key >= '0' && e.key <= '9') {
+                        this.agregarNumero(e.key);
+                    }
+                    
+                    // Operadores
+                    if (e.key === '+' || e.key === '-' || e.key === '*' || e.key === '/') {
+                        this.elegirOperacion(e.key);
+                    }
+                    
+                    // Punto decimal
+                    if (e.key === '.' || e.key === ',') {
+                        this.agregarNumero('.');
+                    }
+                    
+                    // Igual
+                    if (e.key === 'Enter' || e.key === '=') {
+                        e.preventDefault();
+                        this.calcular();
+                    }
+                    
+                    // Limpiar
+                    if (e.key === 'Escape') {
+                        this.limpiar();
+                    }
+                    
+                    // Borrar
+                    if (e.key === 'Backspace') {
+                        e.preventDefault();
+                        this.borrar();
+                    }
+                });
+            }
+
+            agregarNumero(numero) {
+                if (numero === '.' && this.operandoActual.includes('.')) return;
+                
+                if (this.debeReiniciarPantalla) {
+                    this.operandoActual = '';
+                    this.debeReiniciarPantalla = false;
+                }
+                
+                if (this.operandoActual === '0' && numero !== '.') {
+                    this.operandoActual = numero;
+                } else {
+                    this.operandoActual += numero;
+                }
+                
+                this.actualizarPantalla();
+            }
+
+            elegirOperacion(operacion) {
+                if (this.operandoActual === '') return;
+                
+                if (this.operandoAnterior !== '') {
+                    this.calcular();
+                }
+                
+                this.operacion = operacion;
+                this.operandoAnterior = this.operandoActual;
+                this.operandoActual = '';
+                this.debeReiniciarPantalla = false;
+                
+                // Resaltar operación activa
+                this.resaltarOperacion(operacion);
+                this.actualizarPantalla();
+            }
+
+            resaltarOperacion(operacion) {
+                // Remover resaltados previos
+                document.querySelectorAll('.boton-operador').forEach(boton => {
+                    boton.classList.remove('activo');
+                });
+                
+                // Agregar resaltado a la operación actual
+                const botonOperacion = document.querySelector(`[data-operacion="${operacion}"]`);
+                if (botonOperacion) {
+                    botonOperacion.classList.add('activo');
+                }
+            }
+
+            calcular() {
+                let calculo;
+                const anterior = parseFloat(this.operandoAnterior);
+                const actual = parseFloat(this.operandoActual);
+                
+                if (isNaN(anterior) || isNaN(actual)) return;
+                
+                const expresion = `${this.operandoAnterior} ${this.obtenerSimboloOperacion(this.operacion)} ${this.operandoActual}`;
+                
+                switch (this.operacion) {
+                    case '+':
+                        calculo = anterior + actual;
+                        break;
+                    case '-':
+                        calculo = anterior - actual;
+                        break;
+                    case '*':
+                        calculo = anterior * actual;
+                        break;
+                    case '/':
+                        if (actual === 0) {
+                            this.mostrarError('No se puede dividir por cero');
+                            return;
+                        }
+                        calculo = anterior / actual;
+                        break;
+                    default:
+                        return;
+                }
+                
+                // Redondear para evitar problemas de precisión de punto flotante
+                calculo = Math.round((calculo + Number.EPSILON) * 100000000) / 100000000;
+                
+                // Agregar al historial
+                this.agregarAlHistorial(expresion, calculo.toString());
+                
+                this.operandoActual = calculo.toString();
+                this.operacion = undefined;
+                this.operandoAnterior = '';
+                this.debeReiniciarPantalla = true;
+                
+                // Remover resaltado de operación
+                document.querySelectorAll('.boton-operador').forEach(boton => {
+                    boton.classList.remove('activo');
+                });
+                
+                this.actualizarPantalla();
+            }
+
+            obtenerSimboloOperacion(operacion) {
+                switch (operacion) {
+                    case '+': return '+';
+                    case '-': return '−';
+                    case '*': return '×';
+                    case '/': return '÷';
+                    default: return operacion;
+                }
+            }
+
+            borrar() {
+                if (this.debeReiniciarPantalla) {
+                    this.debeReiniciarPantalla = false;
+                    return;
+                }
+                
+                this.operandoActual = this.operandoActual.slice(0, -1);
+                if (this.operandoActual === '') {
+                    this.operandoActual = '0';
+                }
+                this.actualizarPantalla();
+            }
+
+            limpiar() {
+                this.operandoActual = '0';
+                this.operandoAnterior = '';
+                this.operacion = undefined;
+                this.debeReiniciarPantalla = false;
+                
+                // Remover resaltados de operación
+                document.querySelectorAll('.boton-operador').forEach(boton => {
+                    boton.classList.remove('activo');
+                });
+                
+                this.actualizarPantalla();
+            }
+
+            mostrarError(mensaje) {
+                this.elementoOperandoActual.textContent = mensaje;
+                this.elementoOperandoActual.classList.add('error');
+                
+                setTimeout(() => {
+                    this.elementoOperandoActual.classList.remove('error');
+                    this.limpiar();
+                }, 2000);
+            }
+
+            agregarAlHistorial(expresion, resultado) {
+                const elementoHistorial = {
+                    expresion: expresion,
+                    resultado: resultado,
+                    marcaTiempo: new Date().toLocaleString('es-ES')
+                };
+                
+                this.historial.unshift(elementoHistorial);
+                
+                // Mantener solo los últimos 50 cálculos
+                if (this.historial.length > 50) {
+                    this.historial = this.historial.slice(0, 50);
+                }
+                
+                localStorage.setItem('historialCalculadora', JSON.stringify(this.historial));
+                this.actualizarHistorial();
+            }
+
+            actualizarHistorial() {
+                if (this.historial.length === 0) {
+                    this.elementoListaHistorial.innerHTML = '<div class="sin-historial">No hay cálculos realizados</div>';
+                    return;
+                }
+                
+                this.elementoListaHistorial.innerHTML = this.historial.map(elemento => `
+                    <div class="elemento-historial" onclick="calculadora.usarResultadoHistorial('${elemento.resultado}')">
+                        <div class="expresion-historial">${elemento.expresion}</div>
+                        <div class="resultado-historial">= ${elemento.resultado}</div>
+                    </div>
+                `).join('');
+            }
+
+            usarResultadoHistorial(resultado) {
+                this.operandoActual = resultado;
+                this.debeReiniciarPantalla = true;
+                this.actualizarPantalla();
+            }
+
+            limpiarHistorial() {
+                if (confirm('¿Estás seguro de que quieres limpiar todo el historial?')) {
+                    this.historial = [];
+                    localStorage.removeItem('historialCalculadora');
+                    this.actualizarHistorial();
+                }
+            }
+
+            formatearNumero(numero) {
+                const numeroString = numero.toString();
+                const digitosEnteros = parseFloat(numeroString.split('.')[0]);
+                const digitosDecimales = numeroString.split('.')[1];
+                
+                let mostrarEnteros;
+                if (isNaN(digitosEnteros)) {
+                    mostrarEnteros = '';
+                } else {
+                    mostrarEnteros = digitosEnteros.toLocaleString('es-ES', {
+                        maximumFractionDigits: 0
+                    });
+                }
+                
+                if (digitosDecimales != null) {
+                    return `${mostrarEnteros}.${digitosDecimales}`;
+                } else {
+                    return mostrarEnteros;
+                }
+            }
+
+            actualizarPantalla() {
+                if (this.operandoActual.length > 12) {
+                    this.elementoOperandoActual.style.fontSize = '1.2rem';
+                } else {
+                    this.elementoOperandoActual.style.fontSize = '';
+                }
+                
+                this.elementoOperandoActual.textContent = this.formatearNumero(this.operandoActual);
+                
+                if (this.operacion != null) {
+                    this.elementoOperandoAnterior.textContent = 
+                        `${this.formatearNumero(this.operandoAnterior)} ${this.obtenerSimboloOperacion(this.operacion)}`;
+                } else {
+                    this.elementoOperandoAnterior.textContent = '';
+                }
+            }
+        }
+
+        // Inicializar calculadora
+        const calculadora = new Calculadora();
+
+        // Agregar retroalimentación visual para presiones de botones
+        document.querySelectorAll('.boton').forEach(boton => {
+            boton.addEventListener('mousedown', () => {
+                boton.style.transform = 'translateY(0)';
+            });
+            
+            boton.addEventListener('mouseup', () => {
+                setTimeout(() => {
+                    boton.style.transform = '';
+                }, 100);
+            });
+        });
+
+        // Prevenir menú contextual en botones
+        document.querySelectorAll('.boton').forEach(boton => {
+            boton.addEventListener('contextmenu', (e) => {
+                e.preventDefault();
+            });
+        });
+
+        // Menú móvil
+        const menuMovil = document.getElementById('menuMovil');
+        const menuNavegacion = document.getElementById('menuNavegacion');
+
+        if (menuMovil && menuNavegacion) {
+            menuMovil.addEventListener('click', () => {
+                menuMovil.classList.toggle('activo');
+                menuNavegacion.classList.toggle('activo');
+            });
+
+            // Cerrar menú móvil al hacer clic en un enlace
+            document.querySelectorAll('.menu-navegacion a').forEach(enlace => {
+                enlace.addEventListener('click', () => {
+                    menuMovil.classList.remove('activo');
+                    menuNavegacion.classList.remove('activo');
+                });
+            });
+        }
+    </script>
+</body>
+</html>

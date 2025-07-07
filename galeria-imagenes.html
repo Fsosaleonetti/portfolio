@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Galería de Imágenes - Portafolio</title>
+    <link rel="icon" href="Icono/wind.png" type="image/x-icon">
+    <link rel="stylesheet" href="galeria-imagenes-styles.css">
+</head>
+<body>
+    <!-- Navegación -->
+    <nav class="barra-navegacion">
+        <div class="contenedor-navegacion">
+            <div class="logo-navegacion">
+                <a href="index.html" style="text-decoration: none; color: inherit;">Fabricio Agustin Sosa Leonetti</a>
+            </div>
+            <ul class="menu-navegacion" id="menuNavegacion">
+                <li><a href="index.html#inicio">Inicio</a></li>
+                <li><a href="index.html#sobre-mi">Sobre Mí</a></li>
+                <li><a href="index.html#proyectos">Proyectos</a></li>
+                <li><a href="index.html#habilidades">Habilidades</a></li>
+                <li><a href="index.html#experiencia">Experiencia</a></li>
+                <li><a href="index.html#contacto">Contacto</a></li>
+            </ul>
+            <div class="menu-movil" id="menuMovil">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <div class="contenedor">
+        <div class="encabezado">
+            <h1>🖼️ Galería de Imágenes</h1>
+            <p>Explora mi colección de trabajos y proyectos visuales</p>
+        </div>
+
+        <div class="filtros">
+            <button class="boton-filtro activo" data-filtro="todos">Todos</button>
+            <button class="boton-filtro" data-filtro="web">Diseño Web</button>
+            <button class="boton-filtro" data-filtro="ui">UI/UX</button>
+            <button class="boton-filtro" data-filtro="proyectos">Proyectos</button>
+            <button class="boton-filtro" data-filtro="personal">Personal</button>
+        </div>
+
+        <div class="galeria" id="galeria">
+            <div class="cargando">Cargando imágenes...</div>
+        </div>
+
+        <div class="estadisticas">
+            <div class="elemento-estadistica">
+                <div class="numero-estadistica" id="totalImagenes">0</div>
+                <div class="etiqueta-estadistica">Imágenes Totales</div>
+            </div>
+            <div class="elemento-estadistica">
+                <div class="numero-estadistica" id="contadorCategorias">0</div>
+                <div class="etiqueta-estadistica">Categorías</div>
+            </div>
+            <div class="elemento-estadistica">
+                <div class="numero-estadistica" id="contadorVistas">0</div>
+                <div class="etiqueta-estadistica">Visualizaciones</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lightbox -->
+    <div class="lightbox" id="lightbox">
+        <div class="contenido-lightbox">
+            <button class="cerrar-lightbox" id="cerrarLightbox">×</button>
+            <button class="navegacion-lightbox anterior-lightbox" id="anteriorLightbox">‹</button>
+            <button class="navegacion-lightbox siguiente-lightbox" id="siguienteLightbox">›</button>
+            <img class="imagen-lightbox" id="imagenLightbox" src="/placeholder.svg" alt="">
+            <div class="info-lightbox">
+                <div class="titulo-lightbox" id="tituloLightbox"></div>
+                <div class="descripcion-lightbox" id="descripcionLightbox"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class GaleriaImagenes {
+            constructor() {
+                this.imagenes = [
+                    {
+                        id: 1,
+                        src: '/placeholder.svg?height=300&width=400&text=Diseño+Web+1',
+                        titulo: 'Página Web Corporativa',
+                        descripcion: 'Diseño moderno y responsivo para empresa de tecnología con enfoque en la experiencia del usuario.',
+                        categoria: 'web'
+                    },
+                    {
+                        id: 2,
+                        src: '/placeholder.svg?height=300&width=400&text=UI+Design+1',
+                        titulo: 'Interfaz de Aplicación Móvil',
+                        descripcion: 'Diseño de interfaz intuitiva para aplicación de gestión de tareas con paleta de colores moderna.',
+                        categoria: 'ui'
+                    },
+                    {
+                        id: 3,
+                        src: '/placeholder.svg?height=300&width=400&text=Proyecto+1',
+                        titulo: 'Dashboard Analítico',
+                        descripcion: 'Panel de control interactivo con gráficos y métricas en tiempo real para análisis de datos.',
+                        categoria: 'proyectos'
+                    },
+                    {
+                        id: 4,
+                        src: '/placeholder.svg?height=300&width=400&text=Personal+1',
+                        titulo: 'Fotografía Digital',
+                        descripcion: 'Composición artística explorando la intersección entre tecnología y naturaleza.',
+                        categoria: 'personal'
+                    },
+                    {
+                        id: 5,
+                        src: '/placeholder.svg?height=300&width=400&text=Diseño+Web+2',
+                        titulo: 'E-commerce Responsivo',
+                        descripcion: 'Tienda online con carrito de compras, sistema de pagos y diseño adaptable a todos los dispositivos.',
+                        categoria: 'web'
+                    },
+                    {
+                        id: 6,
+                        src: '/placeholder.svg?height=300&width=400&text=UI+Design+2',
+                        titulo: 'Sistema de Diseño',
+                        descripcion: 'Biblioteca completa de componentes UI con guías de estilo y patrones de interacción.',
+                        categoria: 'ui'
+                    },
+                    {
+                        id: 7,
+                        src: '/placeholder.svg?height=300&width=400&text=Proyecto+2',
+                        titulo: 'Aplicación de Clima',
+                        descripcion: 'App del tiempo con pronósticos detallados, mapas interactivos y notificaciones personalizadas.',
+                        categoria: 'proyectos'
+                    },
+                    {
+                        id: 8,
+                        src: '/placeholder.svg?height=300&width=400&text=Personal+2',
+                        titulo: 'Arte Generativo',
+                        descripcion: 'Creación artística usando algoritmos y código para generar patrones visuales únicos.',
+                        categoria: 'personal'
+                    },
+                    {
+                        id: 9,
+                        src: '/placeholder.svg?height=300&width=400&text=Diseño+Web+3',
+                        titulo: 'Portfolio Creativo',
+                        descripcion: 'Sitio web personal con animaciones CSS, efectos parallax y navegación fluida.',
+                        categoria: 'web'
+                    }
+                ];
+
+                this.filtroActual = 'todos';
+                this.indiceImagenActual = 0;
+                this.contadorVistas = parseInt(localStorage.getItem('vistasGaleria') || '0');
+                
+                this.inicializarGaleria();
+                this.inicializarEventos();
+                this.actualizarEstadisticas();
+            }
+
+            inicializarGaleria() {
+                setTimeout(() => {
+                    this.renderizarGaleria();
+                }, 1000);
+            }
+
+            inicializarEventos() {
+                // Filtros
+                document.querySelectorAll('.boton-filtro').forEach(boton => {
+                    boton.addEventListener('click', (e) => {
+                        this.establecerFiltroActivo(e.target);
+                        this.filtroActual = e.target.dataset.filtro;
+                        this.renderizarGaleria();
+                    });
+                });
+
+                // Lightbox
+                document.getElementById('cerrarLightbox').addEventListener('click', () => {
+                    this.cerrarLightbox();
+                });
+
+                document.getElementById('anteriorLightbox').addEventListener('click', () => {
+                    this.navegarLightbox(-1);
+                });
+
+                document.getElementById('siguienteLightbox').addEventListener('click', () => {
+                    this.navegarLightbox(1);
+                });
+
+                // Cerrar lightbox al hacer clic fuera
+                document.getElementById('lightbox').addEventListener('click', (e) => {
+                    if (e.target.id === 'lightbox') {
+                        this.cerrarLightbox();
+                    }
+                });
+
+                // Navegación por teclado
+                document.addEventListener('keydown', (e) => {
+                    const lightbox = document.getElementById('lightbox');
+                    if (lightbox.classList.contains('activo')) {
+                        switch(e.key) {
+                            case 'Escape':
+                                this.cerrarLightbox();
+                                break;
+                            case 'ArrowLeft':
+                                this.navegarLightbox(-1);
+                                break;
+                            case 'ArrowRight':
+                                this.navegarLightbox(1);
+                                break;
+                        }
+                    }
+                });
+            }
+
+            establecerFiltroActivo(botonActivo) {
+                document.querySelectorAll('.boton-filtro').forEach(boton => {
+                    boton.classList.remove('activo');
+                });
+                botonActivo.classList.add('activo');
+            }
+
+            obtenerImagenesFiltradas() {
+                if (this.filtroActual === 'todos') {
+                    return this.imagenes;
+                }
+                return this.imagenes.filter(img => img.categoria === this.filtroActual);
+            }
+
+            renderizarGaleria() {
+                const galeria = document.getElementById('galeria');
+                const imagenesFiltradas = this.obtenerImagenesFiltradas();
+
+                if (imagenesFiltradas.length === 0) {
+                    galeria.innerHTML = '<div class="cargando">No se encontraron imágenes en esta categoría</div>';
+                    return;
+                }
+
+                galeria.innerHTML = imagenesFiltradas.map((imagen, indice) => `
+                    <div class="elemento-galeria" onclick="galeriaImagenes.abrirLightbox(${imagen.id})" style="animation-delay: ${indice * 0.1}s">
+                        <img src="${imagen.src}" alt="${imagen.titulo}" loading="lazy">
+                        <div class="categoria-elemento">${this.obtenerNombreCategoria(imagen.categoria)}</div>
+                        <div class="superposicion-elemento">
+                            <div class="titulo-elemento">${imagen.titulo}</div>
+                            <div class="descripcion-elemento">${imagen.descripcion}</div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            obtenerNombreCategoria(categoria) {
+                const nombresCategoria = {
+                    'web': 'Web',
+                    'ui': 'UI/UX',
+                    'proyectos': 'Proyectos',
+                    'personal': 'Personal'
+                };
+                return nombresCategoria[categoria] || categoria;
+            }
+
+            abrirLightbox(idImagen) {
+                const imagen = this.imagenes.find(img => img.id === idImagen);
+                if (!imagen) return;
+
+                this.indiceImagenActual = this.imagenes.findIndex(img => img.id === idImagen);
+                
+                document.getElementById('imagenLightbox').src = imagen.src;
+                document.getElementById('tituloLightbox').textContent = imagen.titulo;
+                document.getElementById('descripcionLightbox').textContent = imagen.descripcion;
+                document.getElementById('lightbox').classList.add('activo');
+                
+                // Incrementar contador de visualizaciones
+                this.contadorVistas++;
+                localStorage.setItem('vistasGaleria', this.contadorVistas.toString());
+                this.actualizarEstadisticas();
+                
+                // Prevenir scroll del body
+                document.body.style.overflow = 'hidden';
+            }
+
+            cerrarLightbox() {
+                document.getElementById('lightbox').classList.remove('activo');
+                document.body.style.overflow = 'auto';
+            }
+
+            navegarLightbox(direccion) {
+                this.indiceImagenActual += direccion;
+                
+                if (this.indiceImagenActual >= this.imagenes.length) {
+                    this.indiceImagenActual = 0;
+                } else if (this.indiceImagenActual < 0) {
+                    this.indiceImagenActual = this.imagenes.length - 1;
+                }
+
+                const imagen = this.imagenes[this.indiceImagenActual];
+                document.getElementById('imagenLightbox').src = imagen.src;
+                document.getElementById('tituloLightbox').textContent = imagen.titulo;
+                document.getElementById('descripcionLightbox').textContent = imagen.descripcion;
+            }
+
+            actualizarEstadisticas() {
+                document.getElementById('totalImagenes').textContent = this.imagenes.length;
+                
+                const categorias = [...new Set(this.imagenes.map(img => img.categoria))];
+                document.getElementById('contadorCategorias').textContent = categorias.length;
+                
+                document.getElementById('contadorVistas').textContent = this.contadorVistas;
+            }
+        }
+
+        // Inicializar la galería
+        const galeriaImagenes = new GaleriaImagenes();
+
+        // Lazy loading para imágenes
+        if ('IntersectionObserver' in window) {
+            const observadorImagen = new IntersectionObserver((entradas, observador) => {
+                entradas.forEach(entrada => {
+                    if (entrada.isIntersecting) {
+                        const img = entrada.target;
+                        img.src = img.dataset.src || img.src;
+                        img.classList.remove('lazy');
+                        observador.unobserve(img);
+                    }
+                });
+            });
+
+            // Observar imágenes cuando se carguen
+            setTimeout(() => {
+                document.querySelectorAll('img[loading="lazy"]').forEach(img => {
+                    observadorImagen.observe(img);
+                });
+            }, 1100);
+        }
+
+        // Menú móvil
+        const menuMovil = document.getElementById('menuMovil');
+        const menuNavegacion = document.getElementById('menuNavegacion');
+
+        if (menuMovil && menuNavegacion) {
+            menuMovil.addEventListener('click', () => {
+                menuMovil.classList.toggle('activo');
+                menuNavegacion.classList.toggle('activo');
+            });
+
+            // Cerrar menú móvil al hacer clic en un enlace
+            document.querySelectorAll('.menu-navegacion a').forEach(enlace => {
+                enlace.addEventListener('click', () => {
+                    menuMovil.classList.remove('activo');
+                    menuNavegacion.classList.remove('activo');
+                });
+            });
+        }
+    </script>
+</body>
+</html>

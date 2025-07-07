@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador de Frases Aleatorias</title>
+    <link rel="icon" href="Icono/wind.png" type="image/x-icon">
+    <link rel="stylesheet" href="generador-frases-styles.css">
+</head>
+<body>
+    <!-- Navegación -->
+    <nav class="barra-navegacion">
+        <div class="contenedor-navegacion">
+            <div class="logo-navegacion">
+                <a href="index.html" style="text-decoration: none; color: inherit;">Fabricio Agustin Sosa Leonetti</a>
+            </div>
+            <ul class="menu-navegacion" id="menuNavegacion">
+                <li><a href="index.html#inicio">Inicio</a></li>
+                <li><a href="index.html#sobre-mi">Sobre Mí</a></li>
+                <li><a href="index.html#proyectos">Proyectos</a></li>
+                <li><a href="index.html#habilidades">Habilidades</a></li>
+                <li><a href="index.html#experiencia">Experiencia</a></li>
+                <li><a href="index.html#contacto">Contacto</a></li>
+            </ul>
+            <div class="menu-movil" id="menuMovil">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <div class="contenedor">
+        <div class="encabezado">
+            <h1>✨ Generador de Frases Aleatorias</h1>
+            <p>Encontrá inspiración con frases motivacionales</p>
+        </div>
+
+        <div class="contenedor-frase" id="contenedorFrase">
+            <div class="texto-frase" id="textoFrase">
+                Hacé clic en "Nueva Frase" para comenzar tu inspiración diaria
+            </div>
+            <div class="autor-frase" id="autorFrase" style="display: none;">
+                Autor
+            </div>
+        </div>
+
+        <div class="controles">
+            <button class="boton boton-primario" id="botonNuevaFrase">
+                🎲 Nueva Frase
+            </button>
+            <button class="boton boton-secundario" id="botonCompartir">
+                📤 Compartir
+            </button>
+            <button class="boton boton-secundario" id="botonAlternarAgregar">
+                ➕ Agregar Frase
+            </button>
+        </div>
+
+        <div class="seccion-agregar-frase" id="seccionAgregarFrase" style="display: none;">
+            <h3>Agregar Nueva Frase</h3>
+            <form id="formularioAgregarFrase">
+                <div class="grupo-formulario">
+                    <label for="nuevoTextoFrase">Frase:</label>
+                    <textarea id="nuevoTextoFrase" placeholder="Escribí acá la frase motivacional..." required></textarea>
+                </div>
+                <div class="grupo-formulario">
+                    <label for="nuevoAutorFrase">Autor:</label>
+                    <input type="text" id="nuevoAutorFrase" placeholder="Nombre del autor" required>
+                </div>
+                <button type="submit" class="boton boton-primario">
+                    💾 Guardar Frase
+                </button>
+            </form>
+        </div>
+
+        <div class="lista-frases">
+            <h3>📚 Todas las Frases (<span id="contadorFrases">0</span>)</h3>
+            <div id="listaFrases"></div>
+        </div>
+    </div>
+
+    <script>
+        class GeneradorFrases {
+            constructor() {
+                this.frases = [
+                    {
+                        cita: "La tecnología es un sirviente útil, pero un amo peligroso.",
+                        autor: "Christian Lous Lange"
+                    },
+                    {
+                        cita: "El software se está comiendo el mundo.",
+                        autor: "Marc Andreessen"
+                    },
+                    {
+                        cita: "No tememos a las máquinas, tememos a convertirnos en ellas.",
+                        autor: "Sherry Turkle"
+                    },
+                    {
+                        cita: "Lo que se necesita no es la voluntad de creer, sino el deseo de encontrar.",
+                        autor: "Bertrand Russell"
+                    },
+                    {
+                        cita: "La filosofía es un combate contra el embrujamiento de nuestra inteligencia por medio del lenguaje.",
+                        autor: "Ludwig Wittgenstein"
+                    },
+                    {
+                        cita: "No hay diferencia entre máquina y organismo, entre físico y no físico.",
+                        autor: "Donna Haraway"
+                    },
+                    {
+                        cita: "El futuro ya está aquí, solo que no está distribuido equitativamente.",
+                        autor: "William Gibson"
+                    },
+                    {
+                        cita: "Los límites de mi lenguaje son los límites de mi mundo.",
+                        autor: "Ludwig Wittgenstein"
+                    },
+                    {
+                        cita: "La tecnología es mejor cuando une a las personas.",
+                        autor: "Matt Mullenweg"
+                    },
+                    {
+                        cita: "En tiempos de engaño universal, decir la verdad se convierte en un acto revolucionario.",
+                        autor: "George Orwell"
+                    }
+                ];
+                
+                this.indiceFraseActual = -1;
+                this.cargarFrasesDelAlmacenamiento();
+                this.inicializarEventos();
+                this.actualizarListaFrases();
+                this.actualizarContadorFrases();
+            }
+
+            cargarFrasesDelAlmacenamiento() {
+                const frasesGuardadas = localStorage.getItem('frasesPersonalizadas');
+                if (frasesGuardadas) {
+                    const frasesPersonalizadas = JSON.parse(frasesGuardadas);
+                    this.frases = [...this.frases, ...frasesPersonalizadas];
+                }
+            }
+
+            guardarFrasesEnAlmacenamiento() {
+                const frasesPersonalizadas = this.frases.slice(10); // Solo guardar las frases personalizadas
+                localStorage.setItem('frasesPersonalizadas', JSON.stringify(frasesPersonalizadas));
+            }
+
+            inicializarEventos() {
+                document.getElementById('botonNuevaFrase').addEventListener('click', () => {
+                    this.mostrarFraseAleatoria();
+                });
+
+                document.getElementById('botonCompartir').addEventListener('click', () => {
+                    this.compartirFrase();
+                });
+
+                document.getElementById('botonAlternarAgregar').addEventListener('click', () => {
+                    this.alternarSeccionAgregar();
+                });
+
+                document.getElementById('formularioAgregarFrase').addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    this.agregarNuevaFrase();
+                });
+
+                // Mostrar una frase aleatoria al cargar
+                setTimeout(() => this.mostrarFraseAleatoria(), 1000);
+            }
+
+            mostrarFraseAleatoria() {
+                if (this.frases.length === 0) return;
+
+                const contenedor = document.getElementById('contenedorFrase');
+                contenedor.classList.add('cargando');
+
+                setTimeout(() => {
+                    let nuevoIndice;
+                    do {
+                        nuevoIndice = Math.floor(Math.random() * this.frases.length);
+                    } while (nuevoIndice === this.indiceFraseActual && this.frases.length > 1);
+
+                    this.indiceFraseActual = nuevoIndice;
+                    const frase = this.frases[this.indiceFraseActual];
+
+                    document.getElementById('textoFrase').textContent = frase.cita;
+                    document.getElementById('autorFrase').textContent = frase.autor;
+                    document.getElementById('autorFrase').style.display = 'block';
+
+                    contenedor.classList.remove('cargando');
+                    contenedor.classList.add('aparecer-gradual');
+
+                    setTimeout(() => {
+                        contenedor.classList.remove('aparecer-gradual');
+                    }, 500);
+                }, 300);
+            }
+
+            compartirFrase() {
+                if (this.indiceFraseActual === -1) {
+                    alert('Primero seleccioná una frase para compartir');
+                    return;
+                }
+
+                const frase = this.frases[this.indiceFraseActual];
+                const textoCompartir = `"${frase.cita}" - ${frase.autor}`;
+
+                if (navigator.share) {
+                    navigator.share({
+                        title: 'Frase Inspiracional',
+                        text: textoCompartir
+                    });
+                } else {
+                    navigator.clipboard.writeText(textoCompartir).then(() => {
+                        alert('¡Frase copiada al portapapeles!');
+                    });
+                }
+            }
+
+            alternarSeccionAgregar() {
+                const seccion = document.getElementById('seccionAgregarFrase');
+                const esVisible = seccion.style.display !== 'none';
+                seccion.style.display = esVisible ? 'none' : 'block';
+                
+                const boton = document.getElementById('botonAlternarAgregar');
+                boton.textContent = esVisible ? '➕ Agregar Frase' : '❌ Cerrar';
+            }
+
+            agregarNuevaFrase() {
+                const texto = document.getElementById('nuevoTextoFrase').value.trim();
+                const autor = document.getElementById('nuevoAutorFrase').value.trim();
+
+                if (!texto || !autor) {
+                    alert('Por favor, completá todos los campos');
+                    return;
+                }
+
+                const nuevaFrase = { cita: texto, autor };
+                this.frases.push(nuevaFrase);
+                this.guardarFrasesEnAlmacenamiento();
+                this.actualizarListaFrases();
+                this.actualizarContadorFrases();
+
+                // Limpiar formulario
+                document.getElementById('formularioAgregarFrase').reset();
+                
+                // Cerrar sección
+                this.alternarSeccionAgregar();
+
+                alert('¡Frase agregada exitosamente!');
+            }
+
+            eliminarFrase(indice) {
+                if (indice < 10) {
+                    alert('No podés eliminar las frases predeterminadas');
+                    return;
+                }
+
+                if (confirm('¿Estás seguro de que querés eliminar esta frase?')) {
+                    this.frases.splice(indice, 1);
+                    this.guardarFrasesEnAlmacenamiento();
+                    this.actualizarListaFrases();
+                    this.actualizarContadorFrases();
+                }
+            }
+
+            actualizarListaFrases() {
+                const contenedorLista = document.getElementById('listaFrases');
+                contenedorLista.innerHTML = '';
+
+                this.frases.forEach((frase, indice) => {
+                    const elementoFrase = document.createElement('div');
+                    elementoFrase.className = 'elemento-frase';
+                    
+                    elementoFrase.innerHTML = `
+                        <div class="texto-elemento-frase">"${frase.cita}"</div>
+                        <div class="autor-elemento-frase">— ${frase.autor}</div>
+                        ${indice >= 10 ? `<button class="boton-eliminar" onclick="generadorFrases.eliminarFrase(${indice})">×</button>` : ''}
+                    `;
+                    
+                    contenedorLista.appendChild(elementoFrase);
+                });
+            }
+
+            actualizarContadorFrases() {
+                document.getElementById('contadorFrases').textContent = this.frases.length;
+            }
+        }
+
+        // Inicializar la aplicación
+        const generadorFrases = new GeneradorFrases();
+
+        // Atajos de teclado
+        document.addEventListener('keydown', (e) => {
+            if (e.key === ' ' && e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
+                e.preventDefault();
+                generadorFrases.mostrarFraseAleatoria();
+            }
+        });
+
+        // Menú móvil
+        const menuMovil = document.getElementById('menuMovil');
+        const menuNavegacion = document.getElementById('menuNavegacion');
+
+        if (menuMovil && menuNavegacion) {
+            menuMovil.addEventListener('click', () => {
+                menuMovil.classList.toggle('activo');
+                menuNavegacion.classList.toggle('activo');
+            });
+
+            // Cerrar menú móvil al hacer clic en un enlace
+            document.querySelectorAll('.menu-navegacion a').forEach(enlace => {
+                enlace.addEventListener('click', () => {
+                    menuMovil.classList.remove('activo');
+                    menuNavegacion.classList.remove('activo');
+                });
+            });
+        }
+    </script>
+</body>
+</html>
